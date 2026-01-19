@@ -20,6 +20,7 @@ const typeDefs = `
     id: ID!
     title: String!
     completed: Boolean
+    user: User
   }
 
   type Query {
@@ -31,10 +32,19 @@ const typeDefs = `
 `;
 
 const resolvers = {
+  Todo: {
+    user: async (todo) =>
+      (await axios.get(`https://jsonplaceholder.typicode.com/users/${todo.id}`))
+        .data,
+  },
   Query: {
-    getTodos: async () => (await  axios.get("https://jsonplaceholder.typicode.com/todos")).data,
-    getAllUsers: async () => (await  axios.get("https://jsonplaceholder.typicode.com/users")).data,
-    getUser : async (parent , {id}) => (await  axios.get(`https://jsonplaceholder.typicode.com/users/${id}`)).data
+    getTodos: async () =>
+      (await axios.get("https://jsonplaceholder.typicode.com/todos")).data,
+    getAllUsers: async () =>
+      (await axios.get("https://jsonplaceholder.typicode.com/users")).data,
+    getUser: async (parent, { id }) =>
+      (await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`))
+        .data,
   },
 };
 
@@ -51,8 +61,8 @@ async function startServer() {
   app.use(
     "/graphql",
     cors(),
-    express.json(),           // 🔥 REQUIRED
-    expressMiddleware(server)
+    express.json(), // 🔥 REQUIRED
+    expressMiddleware(server),
   );
 
   app.listen(8000, () => {
