@@ -3,6 +3,8 @@ import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import axios from "axios";
+import { TODOS } from "./todos.js";
+import { USER } from "./user.js";
 
 const typeDefs = `
 
@@ -33,18 +35,12 @@ const typeDefs = `
 
 const resolvers = {
   Todo: {
-    user: async (todo) =>
-      (await axios.get(`https://jsonplaceholder.typicode.com/users/${todo.id}`))
-        .data,
+    user: (todo) => USER.find((e) => e.id === todo.id) 
   },
   Query: {
-    getTodos: async () =>
-      (await axios.get("https://jsonplaceholder.typicode.com/todos")).data,
-    getAllUsers: async () =>
-      (await axios.get("https://jsonplaceholder.typicode.com/users")).data,
-    getUser: async (parent, { id }) =>
-      (await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`))
-        .data,
+    getTodos:  () => TODOS,
+    getAllUsers:  () => USER,
+    getUser: async (parent, { id }) => USER.find((e) => e.id === id)
   },
 };
 
